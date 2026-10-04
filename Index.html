@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimiseur de Build Destiny 2</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0e1117; color: #c9d1d9; padding: 20px; }
+    .container { max-width: 950px; margin: 0 auto; background: #161b22; padding: 25px; border-radius: 8px; border: 1px solid #30363d; }
+    h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; }
+    h3 { color: #79c0ff; margin-top: 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 15px; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: #21262d; padding: 6px 10px; border-radius: 4px; }
+    input[type="number"] { width: 60px; padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; text-align: center; border-radius: 4px; font-weight: bold; }
+    select { padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #e3b341; border-radius: 4px; font-size: 0.85em; width: 170px; }
+    button { width: 100%; padding: 14px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.05em; margin-top: 15px; transition: background 0.2s; }
+    button:hover { background: #2ea043; }
+    .results { margin-top: 25px; background: #0d1117; padding: 20px; border-radius: 6px; border: 1px solid #30363d; }
+    .piece-card { background: #161b22; border-left: 4px solid #58a6ff; margin-bottom: 10px; padding: 12px 15px; border-radius: 0 4px 4px 0; }
+    .piece-title { font-weight: bold; color: #f0f6fc; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold; margin-left: 5px; }
+    .badge-artifice { background: #388bfd33; color: #58a6ff; border: 1px solid #388bfd66; }
+    .badge-mod { background: #23863633; color: #3fb950; border: 1px solid #23863666; }
+    .summary-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    .summary-table th, .summary-table td { border: 1px solid #30363d; padding: 8px; text-align: center; }
+    .summary-table th { background: #21262d; color: #8b949e; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Calculateur d'Archétypes - Destiny 2</h2>
+
+  <div class="grid">
+    <!-- Objectifs -->
+    <div>
+      <h3>1. Paliers Visés</h3>
+      <div class="stat-row"><label>Santé :</label><input type="number" id="target-Sante" value="0" step="5"></div>
+      <div class="stat-row"><label>Grenade :</label><input type="number" id="target-Grenade" value="200" step="5"></div>
+      <div class="stat-row"><label>Mêlée :</label><input type="number" id="target-Melee" value="100" step="5"></div>
+      <div class="stat-row"><label>Super :</label><input type="number" id="target-Super" value="0" step="5"></div>
+      <div class="stat-row"><label>Classe :</label><input type="number" id="target-Classe" value="100" step="5"></div>
+      <div class="stat-row"><label>Armes :</label><input type="number" id="target-Armes" value="0" step="5"></div>
+    </div>
+
+    <!-- Doctrine -->
+    <div>
+      <h3>2. Modificateurs Doctrine</h3>
+      <div class="stat-row"><label>Santé :</label><input type="number" id="doc-Sante" value="0" step="5"></div>
+      <div class="stat-row"><label>Grenade :</label><input type="number" id="doc-Grenade" value="-20" step="5"></div>
+      <div class="stat-row"><label>Mêlée :</label><input type="number" id="doc-Melee" value="0" step="5"></div>
+      <div class="stat-row"><label>Super :</label><input type="number" id="doc-Super" value="10" step="5"></div>
+      <div class="stat-row"><label>Classe :</label><input type="number" id="doc-Classe" value="0" step="5"></div>
+      <div class="stat-row"><label>Armes :</label><input type="number" id="doc-Armes" value="0" step="5"></div>
+    </div>
+
+    <!-- Sacrifiabilité pour Artifice -->
+    <div>
+      <h3>3. Sacrifiabilité (Artifice)</h3>
+      <div class="stat-row">
+        <label>Santé :</label>
+        <select id="prio-Sante">
+          <option value="1">Haute (Sacrifier d'abord)</option>
+          <option value="2" selected>Moyenne</option>
+          <option value="3">Basse (Protéger)</option>
+        </select>
+      </div>
+      <div class="stat-row">
+        <label>Grenade :</label>
+        <select id="prio-Grenade">
+          <option value="1">Haute (Sacrifier d'abord)</option>
+          <option value="2">Moyenne</option>
+          <option value="3" selected>Basse (Protéger)</option>
+        </select>
+      </div>
+      <div class="stat-row">
+        <label>Mêlée :</label>
+        <select id="prio-Melee">
+          <option value="1">Haute (Sacrifier d'abord)</option>
+          <option value="2" selected>Moyenne</option>
+          <option value="3">Basse (Protéger)</option>
+        </select>
+      </div>
+      <div class="stat-row">
+        <label>Super :</label>
+        <select id="prio-Super">
+          <option value="1" selected>Haute (Sacrifier d'abord)</option>
+          <option value="2">Moyenne</option>
+          <option value="3">Basse (Protéger)</option>
+        </select>
+      </div>
+      <div class="stat-row">
+        <label>Classe :</label>
+        <select id="prio-Classe">
+          <option value="1">Haute (Sacrifier d'abord)</option>
+          <option value="2" selected>Moyenne</option>
+          <option value="3">Basse (Protéger)</option>
+        </select>
+      </div>
+      <div class="stat-row">
+        <label>Armes :</label>
+        <select id="prio-Armes">
+          <option value="1" selected>Haute (Sacrifier d'abord)</option>
+          <option value="2">Moyenne</option>
+          <option value="3">Basse (Protéger)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button onclick="solveBuild()">Générer la Feuille de Farm Optimale</button>
+
+  <div id="output" class="results" style="display:none;"></div>
+</div>
+
+<script>
+  const archetypes = [
+    { nom: "Brise-siège", main: "Sante", sec: "Grenade" },
+    { nom: "Rempart", main: "Sante", sec: "Classe" },
+    { nom: "Pugnace", main: "Melee", sec: "Sante" },
+    { nom: "Escarmoucheur", main: "Melee", sec: "Armes" },
+    { nom: "Grenadier", main: "Grenade", sec: "Super" },
+    { nom: "Démolisseur", main: "Grenade", sec: "Classe" },
+    { nom: "Colosse", main: "Super", sec: "Sante" },
+    { nom: "Parangon", main: "Super", sec: "Melee" },
+    { nom: "Pilleur", main: "Classe", sec: "Melee" },
+    { nom: "Spécialiste", main: "Classe", sec: "Armes" },
+    { nom: "Mitrailleur", main: "Armes", sec: "Grenade" },
+    { nom: "Maître", main: "Armes", sec: "Super" }
+  ];
+
+  const STATS = ["Sante", "Grenade", "Melee", "Super", "Classe", "Armes"];
+  const SLOTS = ["Casque", "Bras", "Torse", "Jambes", "Objet de classe"];
+
+  function solveBuild() {
+    let targets = {}, doctrine = {}, priorities = {}, netNeeded = {};
+    
+    STATS.forEach(s => {
+      targets[s] = parseInt(document.getElementById(`target-${s}`).value) || 0;
+      doctrine[s] = parseInt(document.getElementById(`doc-${s}`).value) || 0;
+      priorities[s] = parseInt(document.getElementById(`prio-${s}`).value) || 2;
+      
+      netNeeded[s] = Math.max(0, targets[s] - doctrine[s]);
+    });
+
+    let bestSolution = null;
+    let minScore = Infinity;
+
+    function evaluateCombo(selectedArchetypes) {
+      let totals = { Sante: 0, Grenade: 0, Melee: 0, Super: 0, Classe: 0, Armes: 0 };
+      
+      selectedArchetypes.forEach(arch => {
+        totals[arch.main] += 30;
+        totals[arch.sec] += 25;
+      });
+
+      let tertiaryAssignments = [];
+      selectedArchetypes.forEach(arch => {
+        let validTertiary = STATS.filter(s => s !== arch.main && s !== arch.sec);
+        validTertiary.sort((a, b) => (netNeeded[b] - totals[b]) - (netNeeded[a] - totals[a]));
+        let chosen = validTertiary[0];
+        totals[chosen] += 20;
+        tertiaryAssignments.push(chosen);
+      });
+
+      let modsUsed = [], artificeUsed = [];
+      
+      STATS.forEach(s => {
+        let diff = netNeeded[s] - totals[s];
+        while (diff > 0) {
+          if (diff >= 10 && modsUsed.length < 5) {
+            totals[s] += 10;
+            modsUsed.push({ stat: s, val: 10 });
+            diff -= 10;
+          } else if (diff >= 5 && artificeUsed.length < 5) {
+            let sacrificableStats = [...STATS].filter(st => st !== s);
+            sacrificableStats.sort((a, b) => priorities[a] - priorities[b]);
+            
+            let victim = sacrificableStats[0];
+            totals[s] += 5;
+            totals[victim] -= 5;
+            artificeUsed.push({ boost: s, penalty: victim });
+            diff -= 5;
+          } else if (modsUsed.length < 5) {
+            totals[s] += 5;
+            modsUsed.push({ stat: s, val: 5 });
+            diff -= 5;
+          } else {
+            break;
+          }
+        }
+      });
+
+      let deficit = 0, waste = 0;
+      STATS.forEach(s => {
+        let finalValWithDoc = Math.max(0, totals[s] + doctrine[s]);
+        let gap = targets[s] - finalValWithDoc;
+        if (gap > 0) deficit += gap * 10;
+        else waste += Math.abs(gap);
+      });
+
+      let score = deficit + waste;
+      if (score < minScore) {
+        minScore = score;
+        bestSolution = {
+          archetypes: selectedArchetypes,
+          tertiaries: tertiaryAssignments,
+          mods: modsUsed,
+          artifices: artificeUsed,
+          totals: totals
+        };
+      }
+    }
+
+    function findBest() {
+      let sortedStats = [...STATS].sort((a, b) => netNeeded[b] - netNeeded[a]);
+      let primaryTarget = sortedStats[0];
+      let secondaryTarget = sortedStats[1];
+
+      let candidates = archetypes.filter(a => 
+        a.main === primaryTarget || a.sec === primaryTarget ||
+        a.main === secondaryTarget || a.sec === secondaryTarget
+      );
+      if (candidates.length < 3) candidates = archetypes;
+
+      for (let a of candidates) {
+        for (let b of candidates) {
+          for (let c of candidates) {
+            for (let d of candidates) {
+              for (let e of candidates) {
+                evaluateCombo([a, b, c, d, e]);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    findBest();
+    displayResults(bestSolution, targets, doctrine);
+  }
+
+  function displayResults(sol, targets, doctrine) {
+    if (!sol) return;
+
+    let html = `<h3>Plan de Farm Suggéré (5 pièces)</h3>`;
+    
+    SLOTS.forEach((slot, idx) => {
+      let arch = sol.archetypes[idx];
+      let tert = sol.tertiaries[idx];
+      
+      html += `
+        <div class="piece-card">
+          <div class="piece-title">${slot} : Archétype <span style="color:#58a6ff">${arch.nom}</span></div>
+          <div style="font-size:0.9em; margin-top:4px;">
+            • Stats de base : <b>${arch.main} (+30)</b> | <b>${arch.sec} (+25)</b><br>
+            • Stat Tertiaire à viser : <b style="color:#e3b341">${tert} (+20)</b>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `<h3>Ajustements (Mods & Artifice)</h3><ul>`;
+    sol.mods.forEach(m => {
+      html += `<li><span class="badge badge-mod">Mod d'armure</span> Appliquer un mod <b>+${m.val} en ${m.stat}</b></li>`;
+    });
+    sol.artifices.forEach(a => {
+      html += `<li><span class="badge badge-artifice">Bonus Artifice</span> Activer <b>+5 en ${a.boost}</b> en échange de <b style="color:#f85149">-5 en ${a.penalty}</b></li>`;
+    });
+    html += `</ul>`;
+
+    html += `<h3>Bilan Final des Stats</h3>`;
+    html += `<table class="summary-table">
+      <tr><th>Statistique</th><th>Équipement</th><th>Doctrine</th><th>Total Effectif (In-Game)</th><th>Objectif</th></tr>`;
+    
+    STATS.forEach(s => {
+      let equipTotal = sol.totals[s];
+      let docVal = doctrine[s];
+      
+      let finalTotal = Math.max(0, equipTotal + docVal);
+      let targetVal = targets[s];
+      let statusColor = finalTotal >= targetVal ? "#3fb950" : "#f85149";
+
+      html += `<tr>
+        <td><b>${s}</b></td>
+        <td>${equipTotal}</td>
+        <td>${docVal >= 0 ? '+' + docVal : docVal}</td>
+        <td style="color:${statusColor}; font-weight:bold;">${finalTotal} ${equipTotal + docVal < 0 ? '(Plancher 0)' : ''}</td>
+        <td>${targetVal}</td>
+      </tr>`;
+    });
+    html += `</table>`;
+
+    const outDiv = document.getElementById("output");
+    outDiv.innerHTML = html;
+    outDiv.style.display = "block";
+  }
+</script>
+
+</body>
+</html>
