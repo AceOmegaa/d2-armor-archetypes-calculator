@@ -4,16 +4,45 @@
   <meta charset="UTF-8">
   <title>Calculateur d'Archétypes - Destiny 2</title>
   <style>
+    * { box-sizing: border-box; }
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0e1117; color: #c9d1d9; padding: 20px; }
     .container { max-width: 950px; margin: 0 auto; background: #161b22; padding: 25px; border-radius: 8px; border: 1px solid #30363d; }
     .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
     h2 { color: #58a6ff; margin: 0; }
-    h3 { color: #79c0ff; margin-top: 20px; }
+    h3 { color: #79c0ff; margin-top: 0; margin-bottom: 15px; font-size: 1.1em; }
     .lang-select { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 15px; margin-top: 15px; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: #21262d; padding: 6px 10px; border-radius: 4px; }
-    input[type="number"] { width: 60px; padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; text-align: center; border-radius: 4px; font-weight: bold; }
-    select.prio-select { padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #e3b341; border-radius: 4px; font-size: 0.85em; width: 170px; }
+    
+    /* Layout des 3 colonnes alignées */
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 15px; margin-top: 15px; align-items: stretch; }
+    .grid-col { background: #161b22; display: flex; flex-direction: column; }
+    
+    /* Alignement parfait des lignes */
+    .stat-row { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 8px; 
+      background: #21262d; 
+      padding: 4px 10px; 
+      border-radius: 4px; 
+      height: 40px; /* Fixe la hauteur de chaque ligne */
+    }
+    .stat-row label { font-size: 0.9em; }
+
+    /* Normalisation des contrôles (input et select de même hauteur) */
+    input[type="number"], select.prio-select { 
+      height: 28px; 
+      line-height: 28px;
+      padding: 0 6px; 
+      background: #0d1117; 
+      border: 1px solid #30363d; 
+      border-radius: 4px; 
+      font-size: 0.85em;
+    }
+
+    input[type="number"] { width: 60px; color: #58a6ff; text-align: center; font-weight: bold; }
+    select.prio-select { color: #e3b341; width: 175px; }
+
     button { width: 100%; padding: 14px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.05em; margin-top: 15px; transition: background 0.2s; }
     button:hover { background: #2ea043; }
     .results { margin-top: 25px; background: #0d1117; padding: 20px; border-radius: 6px; border: 1px solid #30363d; }
@@ -40,7 +69,7 @@
 
   <div class="grid">
     <!-- Objectifs -->
-    <div>
+    <div class="grid-col">
       <h3 id="ui-section1">1. Paliers Visés</h3>
       <div class="stat-row"><label id="lbl-target-Sante">Santé :</label><input type="number" id="target-Sante" value="0" step="5"></div>
       <div class="stat-row"><label id="lbl-target-Grenade">Grenade :</label><input type="number" id="target-Grenade" value="200" step="5"></div>
@@ -51,7 +80,7 @@
     </div>
 
     <!-- Doctrine -->
-    <div>
+    <div class="grid-col">
       <h3 id="ui-section2">2. Modificateurs Doctrine</h3>
       <div class="stat-row"><label id="lbl-doc-Sante">Santé :</label><input type="number" id="doc-Sante" value="0" step="5"></div>
       <div class="stat-row"><label id="lbl-doc-Grenade">Grenade :</label><input type="number" id="doc-Grenade" value="-20" step="5"></div>
@@ -62,7 +91,7 @@
     </div>
 
     <!-- Sacrifiabilité pour Artifice -->
-    <div>
+    <div class="grid-col">
       <h3 id="ui-section3">3. Sacrifiabilité (Artifice)</h3>
       <div class="stat-row">
         <label id="lbl-prio-Sante">Santé :</label>
@@ -180,8 +209,8 @@
       archetypes: {
         "Brise-siège": "Siegebreaker", "Rempart": "Bulwark", "Pugnace": "Brawler",
         "Escarmoucheur": "Skirmisher", "Grenadier": "Grenadier", "Démolisseur": "Demolitionist",
-        "Colosse": "Colossus", "Parangon": "Paragon", "Pilleur": "Reaver",
-        "Spécialiste": "Specialist", "Mitrailleur": "Gunner", "Maître": "Powerhouse"
+        "Colosse": "Colossus", "Parangon": "Paragon", "Pilleur": "Looter",
+        "Spécialiste": "Specialist", "Mitrailleur": "Gunner", "Maître": "Master"
       }
     }
   };
