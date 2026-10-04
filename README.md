@@ -1,10 +1,10 @@
-# 🛡️ Calculateur d'Archétypes d'Armures — Destiny 2
+# Calculateur d'Archétypes d'Armures — Destiny 2
 
 Un outil web simple, rapide et autonome pour optimiser votre recherche d'armures dans Destiny 2. Indiquez vos objectifs de statistiques totaux et vos modificateurs de doctrine : l'outil génère instantanément la feuille de farm idéale.
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 * **Feuille de farm sur 5 pièces :** Indique l'archétype exact à viser pour chaque emplacement (Casque, Bras, Torse, Jambes, Objet de classe).
 * **Attribution des statistiques tertiaires (+20) :** Calcule quelle stat secondaire chercher sur chaque pièce pour combler les déficits.
@@ -16,7 +16,7 @@ Un outil web simple, rapide et autonome pour optimiser votre recherche d'armures
 
 ---
 
-## 🚀 Comment l'utiliser ?
+## Comment l'utiliser ?
 
 L'outil fonctionne directement dans n'importe quel navigateur web, sans aucune installation.
 
@@ -27,7 +27,7 @@ L'outil fonctionne directement dans n'importe quel navigateur web, sans aucune i
 
 ---
 
-## 🛠️ Installation / Utilisation en Local
+## Installation / Utilisation en Local
 
 Si vous souhaitez utiliser l'outil hors-ligne sur votre machine :
 
