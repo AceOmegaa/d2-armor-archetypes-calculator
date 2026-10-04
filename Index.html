@@ -2,16 +2,18 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Optimiseur de Build Destiny 2</title>
+  <title>Calculateur d'Archétypes - Destiny 2</title>
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0e1117; color: #c9d1d9; padding: 20px; }
     .container { max-width: 950px; margin: 0 auto; background: #161b22; padding: 25px; border-radius: 8px; border: 1px solid #30363d; }
-    h2 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+    h2 { color: #58a6ff; margin: 0; }
     h3 { color: #79c0ff; margin-top: 20px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 15px; }
+    .lang-select { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 15px; margin-top: 15px; }
     .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: #21262d; padding: 6px 10px; border-radius: 4px; }
     input[type="number"] { width: 60px; padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #58a6ff; text-align: center; border-radius: 4px; font-weight: bold; }
-    select { padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #e3b341; border-radius: 4px; font-size: 0.85em; width: 170px; }
+    select.prio-select { padding: 4px; background: #0d1117; border: 1px solid #30363d; color: #e3b341; border-radius: 4px; font-size: 0.85em; width: 170px; }
     button { width: 100%; padding: 14px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1.05em; margin-top: 15px; transition: background 0.2s; }
     button:hover { background: #2ea043; }
     .results { margin-top: 25px; background: #0d1117; padding: 20px; border-radius: 6px; border: 1px solid #30363d; }
@@ -28,108 +30,203 @@
 <body>
 
 <div class="container">
-  <h2>Calculateur d'Archétypes - Destiny 2</h2>
+  <div class="header">
+    <h2 id="ui-title">Calculateur d'Archétypes - Destiny 2</h2>
+    <select id="langSelect" class="lang-select" onchange="toggleLanguage()">
+      <option value="fr" selected>🇫🇷 Français</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+  </div>
 
   <div class="grid">
     <!-- Objectifs -->
     <div>
-      <h3>1. Paliers Visés</h3>
-      <div class="stat-row"><label>Santé :</label><input type="number" id="target-Sante" value="0" step="5"></div>
-      <div class="stat-row"><label>Grenade :</label><input type="number" id="target-Grenade" value="200" step="5"></div>
-      <div class="stat-row"><label>Mêlée :</label><input type="number" id="target-Melee" value="100" step="5"></div>
-      <div class="stat-row"><label>Super :</label><input type="number" id="target-Super" value="0" step="5"></div>
-      <div class="stat-row"><label>Classe :</label><input type="number" id="target-Classe" value="100" step="5"></div>
-      <div class="stat-row"><label>Armes :</label><input type="number" id="target-Armes" value="0" step="5"></div>
+      <h3 id="ui-section1">1. Paliers Visés</h3>
+      <div class="stat-row"><label id="lbl-target-Sante">Santé :</label><input type="number" id="target-Sante" value="0" step="5"></div>
+      <div class="stat-row"><label id="lbl-target-Grenade">Grenade :</label><input type="number" id="target-Grenade" value="200" step="5"></div>
+      <div class="stat-row"><label id="lbl-target-Melee">Mêlée :</label><input type="number" id="target-Melee" value="100" step="5"></div>
+      <div class="stat-row"><label id="lbl-target-Super">Super :</label><input type="number" id="target-Super" value="0" step="5"></div>
+      <div class="stat-row"><label id="lbl-target-Classe">Classe :</label><input type="number" id="target-Classe" value="100" step="5"></div>
+      <div class="stat-row"><label id="lbl-target-Armes">Armes :</label><input type="number" id="target-Armes" value="0" step="5"></div>
     </div>
 
     <!-- Doctrine -->
     <div>
-      <h3>2. Modificateurs Doctrine</h3>
-      <div class="stat-row"><label>Santé :</label><input type="number" id="doc-Sante" value="0" step="5"></div>
-      <div class="stat-row"><label>Grenade :</label><input type="number" id="doc-Grenade" value="-20" step="5"></div>
-      <div class="stat-row"><label>Mêlée :</label><input type="number" id="doc-Melee" value="0" step="5"></div>
-      <div class="stat-row"><label>Super :</label><input type="number" id="doc-Super" value="10" step="5"></div>
-      <div class="stat-row"><label>Classe :</label><input type="number" id="doc-Classe" value="0" step="5"></div>
-      <div class="stat-row"><label>Armes :</label><input type="number" id="doc-Armes" value="0" step="5"></div>
+      <h3 id="ui-section2">2. Modificateurs Doctrine</h3>
+      <div class="stat-row"><label id="lbl-doc-Sante">Santé :</label><input type="number" id="doc-Sante" value="0" step="5"></div>
+      <div class="stat-row"><label id="lbl-doc-Grenade">Grenade :</label><input type="number" id="doc-Grenade" value="-20" step="5"></div>
+      <div class="stat-row"><label id="lbl-doc-Melee">Mêlée :</label><input type="number" id="doc-Melee" value="0" step="5"></div>
+      <div class="stat-row"><label id="lbl-doc-Super">Super :</label><input type="number" id="doc-Super" value="10" step="5"></div>
+      <div class="stat-row"><label id="lbl-doc-Classe">Classe :</label><input type="number" id="doc-Classe" value="0" step="5"></div>
+      <div class="stat-row"><label id="lbl-doc-Armes">Armes :</label><input type="number" id="doc-Armes" value="0" step="5"></div>
     </div>
 
     <!-- Sacrifiabilité pour Artifice -->
     <div>
-      <h3>3. Sacrifiabilité (Artifice)</h3>
+      <h3 id="ui-section3">3. Sacrifiabilité (Artifice)</h3>
       <div class="stat-row">
-        <label>Santé :</label>
-        <select id="prio-Sante">
-          <option value="1">Haute (Sacrifier d'abord)</option>
-          <option value="2" selected>Moyenne</option>
-          <option value="3">Basse (Protéger)</option>
+        <label id="lbl-prio-Sante">Santé :</label>
+        <select id="prio-Sante" class="prio-select">
+          <option value="1" class="opt-prio1">Haute (Sacrifier d'abord)</option>
+          <option value="2" class="opt-prio2" selected>Moyenne</option>
+          <option value="3" class="opt-prio3">Basse (Protéger)</option>
         </select>
       </div>
       <div class="stat-row">
-        <label>Grenade :</label>
-        <select id="prio-Grenade">
-          <option value="1">Haute (Sacrifier d'abord)</option>
-          <option value="2">Moyenne</option>
-          <option value="3" selected>Basse (Protéger)</option>
+        <label id="lbl-prio-Grenade">Grenade :</label>
+        <select id="prio-Grenade" class="prio-select">
+          <option value="1" class="opt-prio1">Haute (Sacrifier d'abord)</option>
+          <option value="2" class="opt-prio2">Moyenne</option>
+          <option value="3" class="opt-prio3" selected>Basse (Protéger)</option>
         </select>
       </div>
       <div class="stat-row">
-        <label>Mêlée :</label>
-        <select id="prio-Melee">
-          <option value="1">Haute (Sacrifier d'abord)</option>
-          <option value="2" selected>Moyenne</option>
-          <option value="3">Basse (Protéger)</option>
+        <label id="lbl-prio-Melee">Mêlée :</label>
+        <select id="prio-Melee" class="prio-select">
+          <option value="1" class="opt-prio1">Haute (Sacrifier d'abord)</option>
+          <option value="2" class="opt-prio2" selected>Moyenne</option>
+          <option value="3" class="opt-prio3">Basse (Protéger)</option>
         </select>
       </div>
       <div class="stat-row">
-        <label>Super :</label>
-        <select id="prio-Super">
-          <option value="1" selected>Haute (Sacrifier d'abord)</option>
-          <option value="2">Moyenne</option>
-          <option value="3">Basse (Protéger)</option>
+        <label id="lbl-prio-Super">Super :</label>
+        <select id="prio-Super" class="prio-select">
+          <option value="1" class="opt-prio1" selected>Haute (Sacrifier d'abord)</option>
+          <option value="2" class="opt-prio2">Moyenne</option>
+          <option value="3" class="opt-prio3">Basse (Protéger)</option>
         </select>
       </div>
       <div class="stat-row">
-        <label>Classe :</label>
-        <select id="prio-Classe">
-          <option value="1">Haute (Sacrifier d'abord)</option>
-          <option value="2" selected>Moyenne</option>
-          <option value="3">Basse (Protéger)</option>
+        <label id="lbl-prio-Classe">Classe :</label>
+        <select id="prio-Classe" class="prio-select">
+          <option value="1" class="opt-prio1">Haute (Sacrifier d'abord)</option>
+          <option value="2" class="opt-prio2" selected>Moyenne</option>
+          <option value="3" class="opt-prio3">Basse (Protéger)</option>
         </select>
       </div>
       <div class="stat-row">
-        <label>Armes :</label>
-        <select id="prio-Armes">
-          <option value="1" selected>Haute (Sacrifier d'abord)</option>
-          <option value="2">Moyenne</option>
-          <option value="3">Basse (Protéger)</option>
+        <label id="lbl-prio-Armes">Armes :</label>
+        <select id="prio-Armes" class="prio-select">
+          <option value="1" class="opt-prio1" selected>Haute (Sacrifier d'abord)</option>
+          <option value="2" class="opt-prio2">Moyenne</option>
+          <option value="3" class="opt-prio3">Basse (Protéger)</option>
         </select>
       </div>
     </div>
   </div>
 
-  <button onclick="solveBuild()">Générer la Feuille de Farm Optimale</button>
+  <button id="btn-calc" onclick="solveBuild()">Générer la Feuille de Farm Optimale</button>
 
   <div id="output" class="results" style="display:none;"></div>
 </div>
 
 <script>
+  let currentLang = "fr";
+
+  const translations = {
+    fr: {
+      title: "Calculateur d'Archétypes - Destiny 2",
+      section1: "1. Paliers Visés",
+      section2: "2. Modificateurs Doctrine",
+      section3: "3. Sacrifiabilité (Artifice)",
+      btnCalc: "Générer la Feuille de Farm Optimale",
+      prio1: "Haute (Sacrifier d'abord)",
+      prio2: "Moyenne",
+      prio3: "Basse (Protéger)",
+      resTitle: "Plan de Farm Suggéré (5 pièces)",
+      resAdjustments: "Ajustements (Mods & Artifice)",
+      resSummary: "Bilan Final des Stats",
+      modBadge: "Mod d'armure",
+      artificeBadge: "Bonus Artifice",
+      applyMod: "Appliquer un mod",
+      activateArtifice: "Activer",
+      inExchangeFor: "en échange de",
+      slots: ["Casque", "Bras", "Torse", "Jambes", "Objet de classe"],
+      stats: { Sante: "Santé", Grenade: "Grenade", Melee: "Mêlée", Super: "Super", Classe: "Classe", Armes: "Armes" },
+      tableHeaders: ["Statistique", "Équipement", "Doctrine", "Total Effectif (In-Game)", "Objectif"],
+      baseStats: "Stats de base :",
+      tertStat: "Stat Tertiaire à viser :",
+      floorMsg: "(Plancher 0)",
+      archetypes: {
+        "Brise-siège": "Brise-siège", "Rempart": "Rempart", "Pugnace": "Pugnace",
+        "Escarmoucheur": "Escarmoucheur", "Grenadier": "Grenadier", "Démolisseur": "Démolisseur",
+        "Colosse": "Colosse", "Parangon": "Parangon", "Pilleur": "Pilleur",
+        "Spécialiste": "Spécialiste", "Mitrailleur": "Mitrailleur", "Maître": "Maître"
+      }
+    },
+    en: {
+      title: "Archetype Calculator - Destiny 2",
+      section1: "1. Target Tiers",
+      section2: "2. Subclass Modifiers",
+      section3: "3. Sacrifice Priority (Artifice)",
+      btnCalc: "Generate Optimal Farming Sheet",
+      prio1: "High (Sacrifice First)",
+      prio2: "Medium",
+      prio3: "Low (Protect)",
+      resTitle: "Suggested Farming Plan (5 Pieces)",
+      resAdjustments: "Adjustments (Mods & Artifice)",
+      resSummary: "Final Stat Breakdown",
+      modBadge: "Armor Mod",
+      artificeBadge: "Artifice Bonus",
+      applyMod: "Apply mod",
+      activateArtifice: "Activate",
+      inExchangeFor: "in exchange for",
+      slots: ["Helmet", "Gauntlets", "Chest Armor", "Leg Armor", "Class Item"],
+      stats: { Sante: "Health", Grenade: "Grenade", Melee: "Melee", Super: "Super", Classe: "Class", Armes: "Weapons" },
+      tableHeaders: ["Stat", "Gear", "Subclass", "Effective Total (In-Game)", "Target"],
+      baseStats: "Base Stats:",
+      tertStat: "Tertiary Stat to Target:",
+      floorMsg: "(Floor 0)",
+      archetypes: {
+        "Brise-siège": "Siegebreaker", "Rempart": "Bulwark", "Pugnace": "Brawler",
+        "Escarmoucheur": "Skirmisher", "Grenadier": "Grenadier", "Démolisseur": "Demolitionist",
+        "Colosse": "Colossus", "Parangon": "Paragon", "Pilleur": "Reaver",
+        "Spécialiste": "Specialist", "Mitrailleur": "Gunner", "Maître": "Powerhouse"
+      }
+    }
+  };
+
   const archetypes = [
-    { nom: "Brise-siège", main: "Sante", sec: "Grenade" },
-    { nom: "Rempart", main: "Sante", sec: "Classe" },
-    { nom: "Pugnace", main: "Melee", sec: "Sante" },
-    { nom: "Escarmoucheur", main: "Melee", sec: "Armes" },
-    { nom: "Grenadier", main: "Grenade", sec: "Super" },
-    { nom: "Démolisseur", main: "Grenade", sec: "Classe" },
-    { nom: "Colosse", main: "Super", sec: "Sante" },
-    { nom: "Parangon", main: "Super", sec: "Melee" },
-    { nom: "Pilleur", main: "Classe", sec: "Melee" },
-    { nom: "Spécialiste", main: "Classe", sec: "Armes" },
-    { nom: "Mitrailleur", main: "Armes", sec: "Grenade" },
-    { nom: "Maître", main: "Armes", sec: "Super" }
+    { key: "Brise-siège", main: "Sante", sec: "Grenade" },
+    { key: "Rempart", main: "Sante", sec: "Classe" },
+    { key: "Pugnace", main: "Melee", sec: "Sante" },
+    { key: "Escarmoucheur", main: "Melee", sec: "Armes" },
+    { key: "Grenadier", main: "Grenade", sec: "Super" },
+    { key: "Démolisseur", main: "Grenade", sec: "Classe" },
+    { key: "Colosse", main: "Super", sec: "Sante" },
+    { key: "Parangon", main: "Super", sec: "Melee" },
+    { key: "Pilleur", main: "Classe", sec: "Melee" },
+    { key: "Spécialiste", main: "Classe", sec: "Armes" },
+    { key: "Mitrailleur", main: "Armes", sec: "Grenade" },
+    { key: "Maître", main: "Armes", sec: "Super" }
   ];
 
   const STATS = ["Sante", "Grenade", "Melee", "Super", "Classe", "Armes"];
-  const SLOTS = ["Casque", "Bras", "Torse", "Jambes", "Objet de classe"];
+
+  function toggleLanguage() {
+    currentLang = document.getElementById("langSelect").value;
+    const t = translations[currentLang];
+
+    document.getElementById("ui-title").innerText = t.title;
+    document.getElementById("ui-section1").innerText = t.section1;
+    document.getElementById("ui-section2").innerText = t.section2;
+    document.getElementById("ui-section3").innerText = t.section3;
+    document.getElementById("btn-calc").innerText = t.btnCalc;
+
+    STATS.forEach(s => {
+      document.getElementById(`lbl-target-${s}`).innerText = t.stats[s] + " :";
+      document.getElementById(`lbl-doc-${s}`).innerText = t.stats[s] + " :";
+      document.getElementById(`lbl-prio-${s}`).innerText = t.stats[s] + " :";
+    });
+
+    document.querySelectorAll(".opt-prio1").forEach(el => el.innerText = t.prio1);
+    document.querySelectorAll(".opt-prio2").forEach(el => el.innerText = t.prio2);
+    document.querySelectorAll(".opt-prio3").forEach(el => el.innerText = t.prio3);
+
+    if (document.getElementById("output").style.display !== "none") {
+      solveBuild();
+    }
+  }
 
   function solveBuild() {
     let targets = {}, doctrine = {}, priorities = {}, netNeeded = {};
@@ -138,7 +235,6 @@
       targets[s] = parseInt(document.getElementById(`target-${s}`).value) || 0;
       doctrine[s] = parseInt(document.getElementById(`doc-${s}`).value) || 0;
       priorities[s] = parseInt(document.getElementById(`prio-${s}`).value) || 2;
-      
       netNeeded[s] = Math.max(0, targets[s] - doctrine[s]);
     });
 
@@ -242,35 +338,37 @@
   function displayResults(sol, targets, doctrine) {
     if (!sol) return;
 
-    let html = `<h3>Plan de Farm Suggéré (5 pièces)</h3>`;
+    const t = translations[currentLang];
+    let html = `<h3>${t.resTitle}</h3>`;
     
-    SLOTS.forEach((slot, idx) => {
+    t.slots.forEach((slot, idx) => {
       let arch = sol.archetypes[idx];
       let tert = sol.tertiaries[idx];
+      let archName = t.archetypes[arch.key];
       
       html += `
         <div class="piece-card">
-          <div class="piece-title">${slot} : Archétype <span style="color:#58a6ff">${arch.nom}</span></div>
+          <div class="piece-title">${slot} : <span style="color:#58a6ff">${archName}</span></div>
           <div style="font-size:0.9em; margin-top:4px;">
-            • Stats de base : <b>${arch.main} (+30)</b> | <b>${arch.sec} (+25)</b><br>
-            • Stat Tertiaire à viser : <b style="color:#e3b341">${tert} (+20)</b>
+            • ${t.baseStats} <b>${t.stats[arch.main]} (+30)</b> | <b>${t.stats[arch.sec]} (+25)</b><br>
+            • ${t.tertStat} <b style="color:#e3b341">${t.stats[tert]} (+20)</b>
           </div>
         </div>
       `;
     });
 
-    html += `<h3>Ajustements (Mods & Artifice)</h3><ul>`;
+    html += `<h3>${t.resAdjustments}</h3><ul>`;
     sol.mods.forEach(m => {
-      html += `<li><span class="badge badge-mod">Mod d'armure</span> Appliquer un mod <b>+${m.val} en ${m.stat}</b></li>`;
+      html += `<li><span class="badge badge-mod">${t.modBadge}</span> ${t.applyMod} <b>+${m.val} ${t.stats[m.stat]}</b></li>`;
     });
     sol.artifices.forEach(a => {
-      html += `<li><span class="badge badge-artifice">Bonus Artifice</span> Activer <b>+5 en ${a.boost}</b> en échange de <b style="color:#f85149">-5 en ${a.penalty}</b></li>`;
+      html += `<li><span class="badge badge-artifice">${t.artificeBadge}</span> ${t.activateArtifice} <b>+5 ${t.stats[a.boost]}</b> ${t.inExchangeFor} <b style="color:#f85149">-5 ${t.stats[a.penalty]}</b></li>`;
     });
     html += `</ul>`;
 
-    html += `<h3>Bilan Final des Stats</h3>`;
+    html += `<h3>${t.resSummary}</h3>`;
     html += `<table class="summary-table">
-      <tr><th>Statistique</th><th>Équipement</th><th>Doctrine</th><th>Total Effectif (In-Game)</th><th>Objectif</th></tr>`;
+      <tr><th>${t.tableHeaders[0]}</th><th>${t.tableHeaders[1]}</th><th>${t.tableHeaders[2]}</th><th>${t.tableHeaders[3]}</th><th>${t.tableHeaders[4]}</th></tr>`;
     
     STATS.forEach(s => {
       let equipTotal = sol.totals[s];
@@ -281,10 +379,10 @@
       let statusColor = finalTotal >= targetVal ? "#3fb950" : "#f85149";
 
       html += `<tr>
-        <td><b>${s}</b></td>
+        <td><b>${t.stats[s]}</b></td>
         <td>${equipTotal}</td>
         <td>${docVal >= 0 ? '+' + docVal : docVal}</td>
-        <td style="color:${statusColor}; font-weight:bold;">${finalTotal} ${equipTotal + docVal < 0 ? '(Plancher 0)' : ''}</td>
+        <td style="color:${statusColor}; font-weight:bold;">${finalTotal} ${equipTotal + docVal < 0 ? t.floorMsg : ''}</td>
         <td>${targetVal}</td>
       </tr>`;
     });
